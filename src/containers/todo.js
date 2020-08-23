@@ -29,7 +29,10 @@ class Todo extends Component {
    
    render() {
        const { currentPage, todoPerPage } = this.state;
-       let todos = this.props.todos
+       let todos = (this.props.priorityFilter!=="All")?
+            _.filter(this.props.todos,(obj) => { return (obj.categories===this.props.priorityFilter)})
+            : _.filter(this.props.todos,(obj) => { return (_.includes(obj.title, this.props.searchText ))})
+      debugger
        const indexOfLastTodo = currentPage * todoPerPage;
        const indexOfFirstTodo = indexOfLastTodo - todoPerPage;
        const currentTodos = todos.slice(indexOfFirstTodo, indexOfLastTodo);
@@ -40,9 +43,10 @@ class Todo extends Component {
        return (
            <div className="row content">
                <div className="col-sm-2 sidenav">
-                   <FilterScreen onPriorityFilterChange={this.onPriorityFilterChange}
-                                 onSearchTextChange={this.onSearchTextChange}
-                   />
+                   <FilterScreen    selectedPriority={this.props.priorityFilter}
+                                    searchText={this.props.searchText}
+                                    onPriorityFilterChange={this.onPriorityFilterChange}
+                                    onSearchTextChange={this.onSearchTextChange}/>
                </div>
                <div className={'col-sm-8 text-left'}>
                    <AddTodo saveTodo={this.saveTodo}/>
@@ -64,8 +68,11 @@ class Todo extends Component {
 
 const mapStateToProps = (state) => ({
     todos:state.todo.todo,
+    priorityFilter:state.todo.priorityFilter,
  });
 
-const mapActionToProps = ({});
+const mapActionToProps = ({
+    createTodo,updateTodo,setFilter,deleteTodo,
+});
  
 export default connect(mapStateToProps, mapActionToProps)(Todo);   
